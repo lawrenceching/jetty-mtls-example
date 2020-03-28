@@ -28,8 +28,6 @@ public class JettyMtlsServerTest {
                 "/client.jks").toExternalForm());
         sslContextFactory.setKeyStorePassword("changeit");
 
-        sslContextFactory.setTrustAll(true);
-
         sslContextFactory.setTrustStorePath(this.getClass().getResource(
                 "/client_truststore.jks").toExternalForm());
         sslContextFactory.setTrustStorePassword("changeit");
