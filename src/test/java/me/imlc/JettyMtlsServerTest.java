@@ -28,6 +28,8 @@ public class JettyMtlsServerTest {
                 "/client.jks").toExternalForm());
         sslContextFactory.setKeyStorePassword("changeit");
 
+        sslContextFactory.setTrustAll(true);
+
         sslContextFactory.setTrustStorePath(this.getClass().getResource(
                 "/client_truststore.jks").toExternalForm());
         sslContextFactory.setTrustStorePassword("changeit");
@@ -40,10 +42,33 @@ public class JettyMtlsServerTest {
         ContentResponse response = httpClient.newRequest("https://localhost:8443")
                 .send();
 
-        logger.info("<<< Status Code: " + response.getStatus());
         assertThat(200, equalTo(response.getStatus()));
-        logger.info("<<< Response Body: " + response.getContentAsString());
         assertThat("Hello, world", equalTo(response.getContentAsString()));
+
+        httpClient.stop();
+    }
+
+    @Test
+    public void canAuthenticateClient1() throws Exception {
+        SslContextFactory sslContextFactory = new SslContextFactory.Client();
+        sslContextFactory.setKeyStorePath(this.getClass().getResource(
+                "/client_nontrust.jks").toExternalForm());
+        sslContextFactory.setKeyStorePassword("changeit");
+
+        HttpClient httpClient = new HttpClient(sslContextFactory);
+
+        httpClient.start();
+
+        Throwable t = null;
+        try {
+            httpClient.newRequest("https://localhost:8443")
+                    .send();
+        } catch (Throwable _t) {
+            t = _t;
+        }
+
+        assertNotNull(t);
+        assertNotNull(t.getMessage(), equalTo("Received fatal alert: certificate_unknown"));
 
         httpClient.stop();
     }
@@ -59,7 +84,7 @@ public class JettyMtlsServerTest {
 
         Throwable t = null;
         try {
-            ContentResponse response = httpClient.newRequest("https://localhost:8443")
+            httpClient.newRequest("https://localhost:8443")
                     .send();
         } catch (Throwable _t) {
             t = _t;

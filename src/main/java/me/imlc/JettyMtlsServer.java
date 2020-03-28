@@ -50,8 +50,9 @@ public class JettyMtlsServer {
     }
 
     public static void main(String[] args) throws Exception {
-        System.setProperty("javax.net.debug", "all");
-        System.setProperty("org.eclipse.jetty.LEVEL", "DEBUG");
+        // Comment out lines below to enable debug log
+//        System.setProperty("javax.net.debug", "all");
+//        System.setProperty("org.eclipse.jetty.LEVEL", "DEBUG");
 
         JettyMtlsServer app = new JettyMtlsServer();
         app.start();
